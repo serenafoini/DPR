@@ -7,22 +7,126 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(gsheet)
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+```{r}
+library(gsheet)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+dataUnido2 <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1uLaXke-KPN28-ESPPoihk8TiXVWp5xuNGHW7w7yqLCc/edit#gid=416085055")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+# Loading the dataset into a variable named dataLab2
+```
+
+
+```{r}
+dataLab2 <- readr::read_csv("./data/gdpCountry.csv")
+```
+
+```{r}
+# Add a new column called 'newColumn'
+dataUnido2$newColumn <- 42
+```
+```{r}
+dataUnido2$newColumn2 <- 43
+```
+
+```{r}
+head(dataUnido2[,c("newColumn","newColumn2")])
+```
+
+```{r}
+head(dataLab2, n=10)
+```
+
+```{r}
+dataUnido2$newColumn3 <- dataUnido2$newColumn * 2 + 5
+```
+
+```{r}
+dataUnido2$newColumn <- dataUnido2$newColumn * 2 + 5
+```
+
+```{r}
+head(dataUnido2[,c("newColumn","newColumn3")])
+```
+
+```{r}
+dataUnido2$multiple <- dataUnido2$newColumn*dataUnido2$newColumn3
+
+dataUnido2$add <- dataUnido2$newColumn+dataUnido2$newColumn3
+
+dataUnido2$minus <- dataUnido2$newColumn2-dataUnido2$newColumn3
+```
+
+```{r}
+library(dplyr)
+# Rename the newColumn
+dataUnido2 <- dataUnido2 %>% 
+  rename(newColumnRenamed = newColumn)
+```
+```{r}
+dataUnido2$newColumn2 <- NULL
+# erasing non important variables
+dataUnido2$isicCodeCombinaison <- NULL
+dataUnido2$tableDefinitionCode <- NULL
+dataUnido2$sourceCode <- NULL
+dataUnido2$updateYear <- NULL
+dataUnido2$unit <- NULL
+```
+
+```{r}
+
+# Read data from the URL
+variablesUnido <- gsheet::gsheet2tbl("https://docs.google.com/spreadsheets/d/1JYiydgI9QEOKAStmtmrBTmGuGQ0bx1gnnarO4Db0MD8/edit#gid=919352283")
+head(variablesUnido2)
+
+# Subset of dataUnido based on countryCode == Canada
+dataUnidoBRCA2 <- filter (dataUnido2, countryCode == 124)
+dataUnidoBRCA2 <- filter(dataUnido2, countryCode ==076)
+```
+
+
+```{r}
+dataUnidoBRAZCAN <- filter (dataUnido2, countryCode == 124 | countryCode ==076)
+dataUnidoBRAZCAN2009 <- filter (dataUnidoBRAZCAN, year >=2009)
+
+ #dataSorted will receive the dataframe dataUnidoCanadaVariablesAfter2009 sorted by the column value
+dataReverse <- arrange(dataUnidoBRAZCAN2009, desc(value))
+```
+
+```{r}
+wideData <- dataSorted %>%
+  pivot_wider(names_from = isicCode, values_from = value)
+```
+
+```{r}
+dataSorted$newColumnRenamed <- NULL
+dataSorted$newColumnRenamed3 <-NULL
+dataSorted$multiple <-NULL
+dataSorted$add <-NULL
+dataSorted$minus <-NULL
+dataSorted$newColumn3 <-NULL
+
+wideData2 <- dataSorted %>%
+  pivot_wider(names_from = isicCode, values_from = value)
+```
+
+```{r}
+widenew2 <- dataLab2 %>%
+  pivot_wider(names_from = country, values_from = value)
+
+# Using pivot_longer() to transform from wide to long data
+longnew2 <- widenew2 %>% 
+  pivot_longer(!c(date, variable), names_to = "country", values_to = "Countrynew")
+```
+
